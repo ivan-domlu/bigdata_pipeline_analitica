@@ -272,8 +272,117 @@ El pipeline utiliza **Apache Spark (PySpark)** para procesar los datos almacenad
 
 Antes de ejecutar el procesamiento, es necesario subir al bucket:
 
-* el script de Spark
-* el archivo de configuración del pipeline
+* El script de Spark
+* El archivo de configuración del pipeline
+
+---
+# Paso 3 — Configurar el Pipeline
+
+Antes de ejecutar el pipeline es necesario configurar algunos parámetros del proyecto.
+
+Estos parámetros se encuentran en el archivo:
+
+```id="cfg_path"
+config/pipeline_config.yaml
+```
+
+Este archivo permite que el pipeline funcione en **cualquier proyecto de Google Cloud**, evitando rutas o valores hardcodeados.
+
+---
+
+# Editar el Archivo de Configuración
+
+Abre el archivo:
+
+```bash id="open_config"
+nano config/pipeline_config.yaml
+```
+
+El archivo tendrá una estructura similar a la siguiente:
+
+```yaml id="cfg_example"
+gcp:
+  project_id: "YOUR_PROJECT_ID"
+  bucket_name: "YOUR_BUCKET_NAME"
+  region: "us-central1"
+
+data_paths:
+  dataset_train: "datasets/fraudTrain.csv"
+  dataset_test: "datasets/fraudTest.csv"
+
+layers:
+  bronze: "bronze/transactions"
+```
+
+---
+
+# Configuración Necesaria
+
+Debes modificar los siguientes valores:
+
+### project_id
+
+El ID de tu proyecto de Google Cloud.
+
+Ejemplo:
+
+```yaml id="cfg_project"
+project_id: "fraud-detection-pipeline-2026"
+```
+
+---
+
+### bucket_name
+
+El nombre del bucket de Cloud Storage creado en el paso anterior.
+
+Ejemplo:
+
+```yaml id="cfg_bucket"
+bucket_name: "fraud-detection-data-2026"
+```
+
+---
+
+### region
+
+La región donde se ejecutará el cluster de Dataproc.
+
+Ejemplo:
+
+```yaml id="cfg_region"
+region: "us-central1"
+```
+
+---
+
+# Ejemplo Completo
+
+```yaml id="cfg_complete"
+gcp:
+  project_id: "fraud-detection-pipeline-2026"
+  bucket_name: "fraud-detection-data-2026"
+  region: "us-central1"
+
+data_paths:
+  dataset_train: "datasets/fraudTrain.csv"
+  dataset_test: "datasets/fraudTest.csv"
+
+layers:
+  bronze: "bronze/transactions"
+```
+
+---
+
+# Guardar el Archivo
+
+Si estás usando **nano**, presiona:
+
+```
+CTRL + X
+Y
+ENTER
+```
 
 ---
 
