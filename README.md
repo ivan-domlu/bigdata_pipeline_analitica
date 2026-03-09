@@ -56,7 +56,7 @@ Este dataset contiene **transacciones simuladas de tarjetas de crédito**, inclu
 # Estructura del Proyecto
 
 ```id="4s06iz"
-fraud-detection-pipeline
+bigdata_pipeline_analitica
 │
 ├── infrastructure
 │     setup_gcs.sh
@@ -107,8 +107,8 @@ El script incluido en este repositorio se encarga de:
 Primero clona el repositorio:
 
 ```bash id="lwh8uc"
-git clone https://github.com/TU_USUARIO/fraud-detection-pipeline.git
-cd fraud-detection-pipeline
+git clone https://github.com/ivan-domlu/bigdata_pipeline_analitica.git
+cd bigdata_pipeline_analitica
 ```
 
 Dar permisos de ejecución al script:
