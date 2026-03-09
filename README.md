@@ -952,9 +952,10 @@ Crear una máquina virtual para ejecutar Airflow:
 ```bash
 gcloud compute instances create airflow-vm \
   --zone=us-central1-a \
-  --machine-type=e2-standard-2 \
-  --image-family=ubuntu-2004-lts \
-  --image-project=ubuntu-os-cloud
+  --machine-type=e2-small \
+  --image-family=ubuntu-2204-lts \
+  --image-project=ubuntu-os-cloud \
+  --boot-disk-size=30GB
 ```
 
 Conectarse a la VM:
@@ -965,27 +966,74 @@ gcloud compute ssh airflow-vm --zone=us-central1-a
 
 ---
 
-## Instalar Apache Airflow
+## Instalar Apache Airflow en la VM
 
-Actualizar el sistema:
+Una vez conectados a la máquina virtual, se procede a instalar Apache Airflow.
+
+Airflow requiere una instalación específica para evitar conflictos de dependencias, por lo que utilizaremos el método recomendado por la documentación oficial.
+
+---
+
+## Actualizar el sistema
 
 ```bash
 sudo apt update
 ```
 
-Instalar Python y pip:
+---
+
+## Instalar Python y dependencias básicas
 
 ```bash
-sudo apt install python3-pip -y
+sudo apt install python3-pip python3-venv -y
 ```
 
-Instalar Airflow:
+---
+
+## Crear entorno virtual para Airflow
+
+Se recomienda instalar Airflow dentro de un entorno virtual.
 
 ```bash
-pip install apache-airflow
+python3 -m venv airflow_env
 ```
 
-Instalar el provider de Google Cloud:
+Activar el entorno virtual:
+
+```bash
+source airflow_env/bin/activate
+```
+
+---
+
+## Definir versión de Airflow
+
+```bash
+export AIRFLOW_VERSION=2.8.1
+export PYTHON_VERSION=3.10
+```
+
+---
+
+## Descargar constraints oficiales
+
+```bash
+export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+```
+
+---
+
+## Instalar Apache Airflow
+
+```bash
+pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+```
+
+---
+
+## Instalar el provider de Google Cloud
+
+Para poder ejecutar jobs de Dataproc desde Airflow se necesita instalar el provider de Google Cloud.
 
 ```bash
 pip install apache-airflow-providers-google
@@ -993,15 +1041,15 @@ pip install apache-airflow-providers-google
 
 ---
 
-## Inicializar Airflow
-
-Inicializar la base de datos:
+## Inicializar la base de datos de Airflow
 
 ```bash
 airflow db init
 ```
 
-Crear usuario administrador:
+---
+
+## Crear usuario administrador
 
 ```bash
 airflow users create \
@@ -1012,23 +1060,29 @@ airflow users create \
 --email admin@example.com
 ```
 
+Cuando el sistema solicite contraseña, elegir una contraseña segura para el usuario administrador.
+
 ---
 
-## Copiar DAG y Configuración
-
-Crear el directorio de DAGs:
+## Crear directorio de DAGs
 
 ```bash
 mkdir -p ~/airflow/dags
 ```
 
-Copiar el DAG:
+---
+
+## Copiar el DAG del pipeline
+
+Desde el repositorio clonado en la VM:
 
 ```bash
 cp orchestration/airflow_dag.py ~/airflow/dags/
 ```
 
-Copiar el archivo de configuración:
+---
+
+## Copiar el archivo de configuración del DAG
 
 ```bash
 mkdir -p ~/airflow/dags/config
@@ -1037,9 +1091,19 @@ cp config/airflow_config.yaml ~/airflow/dags/config/
 
 ---
 
-## Ejecutar Airflow
+## Autenticación con Google Cloud
 
-Iniciar el scheduler:
+Para permitir que Airflow ejecute jobs en Dataproc es necesario autenticarse con Google Cloud.
+
+```bash
+gcloud auth application-default login
+```
+
+---
+
+## Iniciar Airflow
+
+En una terminal iniciar el scheduler:
 
 ```bash
 airflow scheduler
@@ -1053,9 +1117,9 @@ airflow webserver --port 8080
 
 ---
 
-## Acceder a la Interfaz de Airflow
+## Acceder a la interfaz de Airflow
 
-Abrir en el navegador:
+Abrir el navegador y acceder a:
 
 ```text
 http://<VM_EXTERNAL_IP>:8080
@@ -1066,6 +1130,8 @@ En la interfaz aparecerá el DAG:
 ```text
 fraud_detection_pipeline
 ```
+
+Desde esta interfaz se puede activar y ejecutar el pipeline completo.
 
 ---
 
