@@ -310,6 +310,7 @@ data_paths:
 layers:
   bronze: "bronze/transactions"
   silver: "silver/transactions_clean"
+  gold: "gold/fraud_analytics"
 ```
 
 ---
@@ -369,6 +370,7 @@ data_paths:
 layers:
   bronze: "bronze/transactions"
   silver: "silver/transactions_clean"
+  gold: "gold/fraud_analytics"
 ```
 
 ---
