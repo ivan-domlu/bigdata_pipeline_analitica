@@ -466,6 +466,124 @@ Dentro de esta carpeta encontrarás múltiples archivos **Parquet**, que corresp
 
 ---
 
+# Paso 6 — Procesamiento de Datos (Silver Layer)
+
+La **Silver Layer** corresponde a la segunda etapa del pipeline de datos.
+
+En esta etapa se realiza:
+
+* limpieza de datos
+* estandarización de tipos
+* creación de nuevas variables (feature engineering)
+
+El objetivo es transformar los datos crudos de la capa **Bronze** en un dataset limpio y enriquecido que pueda utilizarse para análisis y modelado.
+
+---
+
+## Entrada y Salida de Datos
+
+Entrada (Bronze):
+
+```
+gs://<BUCKET_NAME>/bronze/transactions/
+```
+
+Salida (Silver):
+
+```
+gs://<BUCKET_NAME>/silver/transactions_clean/
+```
+
+---
+
+## Transformaciones Aplicadas
+
+Durante esta etapa se generan nuevas variables relevantes para la detección de fraude.
+
+| Feature                    | Descripción                                                   |
+| -------------------------- | ------------------------------------------------------------- |
+| transaction_timestamp      | Conversión del campo de fecha a formato timestamp             |
+| transaction_hour           | Hora en la que ocurrió la transacción                         |
+| customer_age               | Edad del cliente calculada a partir de la fecha de nacimiento |
+| is_night_transaction       | Indicador de transacción nocturna                             |
+| distance_customer_merchant | Distancia geográfica entre cliente y comercio                 |
+
+Estas transformaciones permiten identificar patrones sospechosos como:
+
+* transacciones nocturnas
+* montos inusuales
+* compras en ubicaciones lejanas al cliente
+
+---
+
+## Subir el Script al Bucket
+
+Primero sube el script de Spark al bucket de Cloud Storage.
+
+```bash
+gsutil cp spark_jobs/silver/silver_layer.py gs://<BUCKET_NAME>/scripts/
+```
+
+Verifica que el archivo se haya subido correctamente:
+
+```bash
+gsutil ls gs://<BUCKET_NAME>/scripts/
+```
+
+Salida esperada:
+
+```
+silver_layer.py
+```
+
+---
+
+## Ejecutar el Job de Spark
+
+Para ejecutar el procesamiento de la Silver Layer utiliza el siguiente comando:
+
+```bash
+gcloud dataproc jobs submit pyspark \
+gs://<BUCKET_NAME>/scripts/silver_layer.py \
+--cluster=<CLUSTER_NAME> \
+--region=<REGION> \
+--files=gs://<BUCKET_NAME>/config/pipeline_config.yaml \
+-- pipeline_config.yaml
+```
+
+Ejemplo:
+
+```bash
+gcloud dataproc jobs submit pyspark \
+gs://fraud-detection-data-2026/scripts/silver_layer.py \
+--cluster=fraud-dataproc-cluster \
+--region=us-central1 \
+--files=gs://fraud-detection-data-2026/config/pipeline_config.yaml \
+-- pipeline_config.yaml
+```
+
+---
+
+## Verificar Resultados
+
+Una vez finalizado el job, los datos procesados estarán disponibles en la capa **Silver**.
+
+Verifica con:
+
+```bash
+gsutil ls gs://<BUCKET_NAME>/silver/
+```
+
+Salida esperada:
+
+```
+gs://<BUCKET_NAME>/silver/transactions_clean/
+```
+
+Dentro de esta carpeta se generarán múltiples archivos **Parquet**, producidos por Spark.
+
+---
+
 # Autores
 
 - Ana Teresa Vega
