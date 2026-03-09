@@ -826,6 +826,253 @@ Estas tablas están optimizadas para **consultas analíticas y dashboards**.
 
 ---
 
+# Paso 10 — Orquestación del Pipeline con Apache Airflow
+
+Para automatizar la ejecución del pipeline se utiliza **Apache Airflow**, una plataforma ampliamente utilizada en proyectos de Data Engineering para la **orquestación de workflows**.
+
+Airflow permite definir pipelines como **DAGs (Directed Acyclic Graphs)** donde cada nodo representa una tarea del flujo de datos.
+
+En este proyecto, Airflow se encarga de ejecutar automáticamente las distintas etapas del pipeline de procesamiento.
+
+---
+
+## Arquitectura del Pipeline Orquestado
+
+El pipeline completo se ejecuta mediante el siguiente flujo:
+
+```text
+Bronze Layer
+     │
+     ▼
+Silver Layer
+     │
+     ▼
+Gold Layer
+     │
+     ▼
+Load to BigQuery
+```
+
+Cada etapa corresponde a un **job de Spark ejecutado en Google Cloud Dataproc**.
+
+Airflow coordina la ejecución de estos jobs y asegura que cada etapa se ejecute únicamente cuando la anterior haya finalizado correctamente.
+
+---
+
+## Configuración del Pipeline de Airflow
+
+Para evitar valores hardcoded dentro del DAG, la configuración de infraestructura se define en un archivo YAML externo.
+
+Archivo:
+
+```text
+config/airflow_config.yaml
+```
+
+Contenido:
+
+```yaml
+gcp:
+  project_id: "fraud-detection-pipeline-2026"
+  region: "us-central1"
+
+dataproc:
+  cluster_name: "fraud-dataproc-cluster"
+
+storage:
+  bucket: "fraud-detection-data-2026"
+
+paths:
+  config_file: "gs://fraud-detection-data-2026/config/pipeline_config.yaml"
+
+scripts:
+  bronze: "gs://fraud-detection-data-2026/scripts/bronze_layer.py"
+  silver: "gs://fraud-detection-data-2026/scripts/silver_layer.py"
+  gold: "gs://fraud-detection-data-2026/scripts/gold_layer.py"
+  bigquery: "gs://fraud-detection-data-2026/scripts/load_to_bigquery.py"
+```
+
+Este archivo permite modificar fácilmente:
+
+* proyecto de GCP
+* cluster de Dataproc
+* bucket de almacenamiento
+* rutas de scripts
+
+sin necesidad de modificar el código del DAG.
+
+---
+
+## DAG del Pipeline
+
+El DAG que orquesta el pipeline se encuentra en:
+
+```text
+orchestration/airflow_dag.py
+```
+
+Este DAG ejecuta secuencialmente los siguientes jobs:
+
+| Task          | Descripción                                   |
+| ------------- | --------------------------------------------- |
+| bronze_layer  | ingestión de datos y conversión CSV → Parquet |
+| silver_layer  | limpieza de datos y feature engineering       |
+| gold_layer    | generación de datasets analíticos             |
+| load_bigquery | carga de datasets analíticos en BigQuery      |
+
+---
+
+## Crear una VM para Airflow
+
+Crear una máquina virtual para ejecutar Airflow:
+
+```bash
+gcloud compute instances create airflow-vm \
+  --zone=us-central1-a \
+  --machine-type=e2-standard-2 \
+  --image-family=ubuntu-2004-lts \
+  --image-project=ubuntu-os-cloud
+```
+
+Conectarse a la VM:
+
+```bash
+gcloud compute ssh airflow-vm --zone=us-central1-a
+```
+
+---
+
+## Instalar Apache Airflow
+
+Actualizar el sistema:
+
+```bash
+sudo apt update
+```
+
+Instalar Python y pip:
+
+```bash
+sudo apt install python3-pip -y
+```
+
+Instalar Airflow:
+
+```bash
+pip install apache-airflow
+```
+
+Instalar el provider de Google Cloud:
+
+```bash
+pip install apache-airflow-providers-google
+```
+
+---
+
+## Inicializar Airflow
+
+Inicializar la base de datos:
+
+```bash
+airflow db init
+```
+
+Crear usuario administrador:
+
+```bash
+airflow users create \
+--username admin \
+--firstname admin \
+--lastname admin \
+--role Admin \
+--email admin@example.com
+```
+
+---
+
+## Copiar DAG y Configuración
+
+Crear el directorio de DAGs:
+
+```bash
+mkdir -p ~/airflow/dags
+```
+
+Copiar el DAG:
+
+```bash
+cp orchestration/airflow_dag.py ~/airflow/dags/
+```
+
+Copiar el archivo de configuración:
+
+```bash
+mkdir -p ~/airflow/dags/config
+cp config/airflow_config.yaml ~/airflow/dags/config/
+```
+
+---
+
+## Ejecutar Airflow
+
+Iniciar el scheduler:
+
+```bash
+airflow scheduler
+```
+
+En otra terminal iniciar el servidor web:
+
+```bash
+airflow webserver --port 8080
+```
+
+---
+
+## Acceder a la Interfaz de Airflow
+
+Abrir en el navegador:
+
+```text
+http://<VM_EXTERNAL_IP>:8080
+```
+
+En la interfaz aparecerá el DAG:
+
+```text
+fraud_detection_pipeline
+```
+
+---
+
+## Ejecutar el Pipeline
+
+Desde la interfaz de Airflow:
+
+1. Activar el DAG
+2. Presionar **Trigger DAG**
+
+Airflow ejecutará automáticamente el pipeline completo:
+
+```text
+Bronze → Silver → Gold → BigQuery
+```
+
+---
+
+## Beneficios de la Orquestación
+
+El uso de Airflow permite:
+
+* automatizar la ejecución del pipeline
+* manejar dependencias entre tareas
+* reintentar tareas fallidas
+* monitorear el estado del pipeline
+* centralizar la ejecución del flujo de datos
+
+---
+
 # Autores
 
 - Ana Teresa Vega
