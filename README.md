@@ -309,6 +309,7 @@ data_paths:
 
 layers:
   bronze: "bronze/transactions"
+  silver: "silver/transactions_clean"
 ```
 
 ---
@@ -367,6 +368,7 @@ data_paths:
 
 layers:
   bronze: "bronze/transactions"
+  silver: "silver/transactions_clean"
 ```
 
 ---
