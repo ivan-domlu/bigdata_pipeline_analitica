@@ -586,6 +586,159 @@ Dentro de esta carpeta se generarán múltiples archivos **Parquet**, producidos
 
 ---
 
+# Paso 7 — Analítica de Datos (Gold Layer)
+
+La **Gold Layer** representa la etapa final del pipeline de datos y está diseñada para generar **datasets agregados optimizados para análisis y reporting**.
+
+En esta capa se construyen **tablas analíticas derivadas** a partir de los datos limpios de la Silver Layer.
+
+Estas tablas permiten analizar patrones de fraude desde diferentes perspectivas:
+
+* categoría de comercio
+* ubicación geográfica
+* comportamiento temporal
+* características demográficas
+* distancia entre cliente y comercio
+
+---
+
+## Entrada y Salida de Datos
+
+Entrada (Silver Layer):
+
+```text
+gs://<BUCKET_NAME>/silver/transactions_clean/
+```
+
+Salida (Gold Layer):
+
+```text
+gs://<BUCKET_NAME>/gold/fraud_analytics/
+```
+
+---
+
+## Datasets Analíticos Generados
+
+La Gold Layer genera múltiples datasets agregados que permiten realizar análisis exploratorio de fraude.
+
+---
+
+### Fraud Rate by Category
+
+Analiza la tasa de fraude por tipo de comercio.
+
+Columnas:
+
+| columna            | descripción                          |
+| ------------------ | ------------------------------------ |
+| category           | categoría del comercio               |
+| total_transactions | número total de transacciones        |
+| fraud_transactions | número de transacciones fraudulentas |
+| fraud_rate         | tasa de fraude                       |
+| avg_amount         | monto promedio                       |
+
+---
+
+### Fraud Rate by State
+
+Permite identificar estados con mayor actividad fraudulenta.
+
+Columnas:
+
+| columna            | descripción                |
+| ------------------ | -------------------------- |
+| state              | estado                     |
+| total_transactions | total de transacciones     |
+| fraud_transactions | transacciones fraudulentas |
+| fraud_rate         | tasa de fraude             |
+
+---
+
+### Fraud by Hour
+
+Analiza patrones temporales de fraude durante el día.
+
+Columnas:
+
+| columna            | descripción                |
+| ------------------ | -------------------------- |
+| transaction_hour   | hora del día               |
+| total_transactions | total de transacciones     |
+| fraud_transactions | transacciones fraudulentas |
+| fraud_rate         | tasa de fraude             |
+
+---
+
+### Fraud by Age Group
+
+Evalúa la distribución de fraude según grupos de edad de los clientes.
+
+Columnas:
+
+| columna            | descripción            |
+| ------------------ | ---------------------- |
+| age_group          | grupo de edad          |
+| total_transactions | total de transacciones |
+| fraud_transactions | número de fraudes      |
+| fraud_rate         | tasa de fraude         |
+
+---
+
+### Fraud by Distance
+
+Analiza la relación entre la distancia cliente-comercio y el fraude.
+
+Columnas:
+
+| columna            | descripción            |
+| ------------------ | ---------------------- |
+| distance_bucket    | rango de distancia     |
+| total_transactions | total de transacciones |
+| fraud_transactions | número de fraudes      |
+| fraud_rate         | tasa de fraude         |
+
+---
+
+## Subir el Script al Bucket
+
+```bash
+gsutil cp spark_jobs/gold/gold_layer.py gs://<BUCKET_NAME>/scripts/
+```
+
+---
+
+## Ejecutar el Job de Spark
+
+```bash
+gcloud dataproc jobs submit pyspark \
+gs://<BUCKET_NAME>/scripts/gold_layer.py \
+--cluster=<CLUSTER_NAME> \
+--region=<REGION> \
+--files=gs://<BUCKET_NAME>/config/pipeline_config.yaml \
+-- pipeline_config.yaml
+```
+
+---
+
+## Verificar Resultados
+
+```bash
+gsutil ls gs://<BUCKET_NAME>/gold/fraud_analytics/
+```
+
+Salida esperada:
+
+```text
+fraud_by_category/
+fraud_by_state/
+fraud_by_hour/
+fraud_by_age_group/
+fraud_by_distance/
+```
+
+---
+
 # Autores
 
 - Ana Teresa Vega
