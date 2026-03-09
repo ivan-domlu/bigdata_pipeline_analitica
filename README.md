@@ -741,6 +741,91 @@ fraud_by_distance/
 
 ---
 
+# Paso 8 — Carga de Datos Analíticos en BigQuery
+
+La última etapa del pipeline consiste en cargar los datasets analíticos generados en la **Gold Layer** hacia **Google BigQuery**.
+
+BigQuery actúa como el **Data Warehouse analítico del sistema**, permitiendo ejecutar consultas SQL sobre grandes volúmenes de datos.
+
+---
+
+## Crear el Dataset en BigQuery
+
+Primero se crea un dataset donde se almacenarán las tablas analíticas.
+
+Ejecutar en Cloud Shell:
+
+```bash
+bq mk --dataset \
+--location=US \
+fraud_detection_analytics
+```
+
+Esto crea el dataset:
+
+```
+fraud-detection-pipeline-2026.fraud_detection_analytics
+```
+
+---
+
+## Subir el Script de Carga
+
+El siguiente script se encarga de cargar los datasets de la Gold Layer hacia BigQuery.
+
+```bash
+gsutil cp spark_jobs/gold/load_to_bigquery.py gs://<BUCKET_NAME>/scripts/
+```
+
+---
+
+## Ejecutar el Job de Carga
+
+```bash
+gcloud dataproc jobs submit pyspark \
+gs://<BUCKET_NAME>/scripts/load_to_bigquery.py \
+--cluster=<CLUSTER_NAME> \
+--region=<REGION> \
+--files=gs://<BUCKET_NAME>/config/pipeline_config.yaml \
+-- pipeline_config.yaml
+```
+
+Este job cargará automáticamente las siguientes tablas:
+
+| Tabla              | Descripción                             |
+| ------------------ | --------------------------------------- |
+| fraud_by_category  | tasa de fraude por categoría            |
+| fraud_by_state     | tasa de fraude por estado               |
+| fraud_by_hour      | patrones temporales de fraude           |
+| fraud_by_age_group | fraude por grupo de edad                |
+| fraud_by_distance  | fraude según distancia cliente-comercio |
+
+---
+
+## Verificar las Tablas en BigQuery
+
+Una vez finalizado el job, las tablas estarán disponibles en BigQuery.
+
+Dataset:
+
+```
+fraud_detection_analytics
+```
+
+Tablas generadas:
+
+```
+fraud_by_category
+fraud_by_state
+fraud_by_hour
+fraud_by_age_group
+fraud_by_distance
+```
+
+Estas tablas están optimizadas para **consultas analíticas y dashboards**.
+
+---
+
 # Autores
 
 - Ana Teresa Vega
