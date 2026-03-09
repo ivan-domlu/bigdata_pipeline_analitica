@@ -446,7 +446,7 @@ gs://fraud-detection-data-2026/scripts/bronze_layer.py \
 
 ---
 
-# Resultado Esperado
+## Resultado Esperado
 
 Después de ejecutar el job, los datos procesados se almacenarán en la capa **Bronze** del Data Lake.
 
