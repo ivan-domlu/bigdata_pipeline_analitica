@@ -43,6 +43,7 @@ def main(config_path):
         df.write \
             .format("bigquery") \
             .option("table", f"{dataset}.{table}") \
+            .option("temporaryGcsBucket", bucket) \
             .mode("overwrite") \
             .save()
 
