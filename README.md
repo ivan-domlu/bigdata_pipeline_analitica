@@ -110,7 +110,7 @@ Ejemplo:
 
 ---
 
-# Estructura del Data Lake
+## Estructura del Data Lake
 
 Después de ejecutar el script, se creará la siguiente estructura en **Google Cloud Storage**:
 
@@ -188,7 +188,7 @@ Esto permite ejecutar **procesamiento distribuido real con Spark**.
 
 ---
 
-# Habilitar la API de Dataproc
+## Habilitar la API de Dataproc
 
 Primero habilita el servicio de Dataproc en tu proyecto de GCP.
 
@@ -200,7 +200,7 @@ gcloud services enable dataproc.googleapis.com
 
 ---
 
-# Crear el Cluster
+## Crear el Cluster
 
 Ejecuta el siguiente comando:
 
@@ -218,7 +218,7 @@ gcloud dataproc clusters create <CLUSTER_NAME> \
 
 ---
 
-## Ejemplo
+### Ejemplo
 
 ```bash
 gcloud dataproc clusters create fraud-dataproc-cluster \
@@ -234,7 +234,7 @@ gcloud dataproc clusters create fraud-dataproc-cluster \
 
 ---
 
-# Configuración del Cluster
+## Configuración del Cluster
 
 La configuración utilizada busca un balance entre **capacidad de procesamiento y costo**.
 
@@ -249,7 +249,7 @@ Esto permite ejecutar **Spark distribuido en 3 nodos** sin requerir recursos exc
 
 ---
 
-# Verificar el Cluster
+## Verificar el Cluster
 
 Una vez creado el cluster, puedes verificar su estado ejecutando:
 
@@ -287,7 +287,7 @@ Este archivo permite que el pipeline funcione en **cualquier proyecto de Google 
 
 ---
 
-# Editar el Archivo de Configuración
+## Editar el Archivo de Configuración
 
 Abre el archivo:
 
@@ -313,11 +313,11 @@ layers:
 
 ---
 
-# Configuración Necesaria
+### Configuración Necesaria
 
 Debes modificar los siguientes valores:
 
-### project_id
+#### project_id
 
 El ID de tu proyecto de Google Cloud.
 
@@ -329,7 +329,7 @@ project_id: "fraud-detection-pipeline-2026"
 
 ---
 
-### bucket_name
+#### bucket_name
 
 El nombre del bucket de Cloud Storage creado en el paso anterior.
 
@@ -341,7 +341,7 @@ bucket_name: "fraud-detection-data-2026"
 
 ---
 
-### region
+#### region
 
 La región donde se ejecutará el cluster de Dataproc.
 
@@ -353,7 +353,7 @@ region: "us-central1"
 
 ---
 
-# Ejemplo Completo
+### Ejemplo Completo
 
 ```yaml id="cfg_complete"
 gcp:
@@ -371,7 +371,7 @@ layers:
 
 ---
 
-# Guardar el Archivo
+## Guardar el Archivo
 
 Si estás usando **nano**, presiona:
 
