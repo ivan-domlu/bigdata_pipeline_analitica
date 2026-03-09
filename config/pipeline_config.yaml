@@ -1,0 +1,11 @@
+gcp:
+  project_id: "YOUR_PROJECT_ID"
+  bucket_name: "YOUR_BUCKET_NAME"
+  region: "us-central1"
+
+data_paths:
+  dataset_train: "datasets/fraudTrain.csv"
+  dataset_test: "datasets/fraudTest.csv"
+
+layers:
+  bronze: "bronze/transactions"
