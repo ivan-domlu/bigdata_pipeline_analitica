@@ -873,6 +873,29 @@ Contenido:
 
 ```yaml
 gcp:
+  project_id: "YOUR_GCP_PROJECT_ID"
+  region: "YOUR_GCP_REGION"
+
+dataproc:
+  cluster_name: "YOUR_DATAPROC_CLUSTER_NAME"
+
+storage:
+  bucket: "YOUR_GCS_BUCKET_NAME"
+
+paths:
+  config_file: "gs://YOUR_GCS_BUCKET_NAME/config/pipeline_config.yaml"
+
+scripts:
+  bronze: "gs://YOUR_GCS_BUCKET_NAME/scripts/bronze_layer.py"
+  silver: "gs://YOUR_GCS_BUCKET_NAME/scripts/silver_layer.py"
+  gold: "gs://YOUR_GCS_BUCKET_NAME/scripts/gold_layer.py"
+  bigquery: "gs://YOUR_GCS_BUCKET_NAME/scripts/load_to_bigquery.py"
+```
+
+Ejemplo de uso:
+
+```yaml
+gcp:
   project_id: "fraud-detection-pipeline-2026"
   region: "us-central1"
 
