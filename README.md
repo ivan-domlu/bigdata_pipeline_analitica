@@ -275,10 +275,7 @@ Antes de ejecutar el procesamiento, es necesario subir al bucket:
 * El script de Spark
 * El archivo de configuración del pipeline
 
----
-# Paso 3 — Configurar el Pipeline
-
-Antes de ejecutar el pipeline es necesario configurar algunos parámetros del proyecto.
+Es necesario configurar algunos parámetros del proyecto.
 
 Estos parámetros se encuentran en el archivo:
 
