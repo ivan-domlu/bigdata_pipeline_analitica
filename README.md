@@ -974,7 +974,7 @@ Airflow requiere una instalación específica para evitar conflictos de dependen
 
 ---
 
-## Actualizar el sistema
+### Actualizar el sistema
 
 ```bash
 sudo apt update
@@ -982,7 +982,7 @@ sudo apt update
 
 ---
 
-## Instalar Python y dependencias básicas
+### Instalar Python y dependencias básicas
 
 ```bash
 sudo apt install python3-pip python3-venv -y
@@ -990,7 +990,7 @@ sudo apt install python3-pip python3-venv -y
 
 ---
 
-## Crear entorno virtual para Airflow
+### Crear entorno virtual para Airflow
 
 Se recomienda instalar Airflow dentro de un entorno virtual.
 
@@ -1006,7 +1006,7 @@ source airflow_env/bin/activate
 
 ---
 
-## Definir versión de Airflow
+### Definir versión de Airflow
 
 ```bash
 export AIRFLOW_VERSION=2.8.1
@@ -1015,7 +1015,7 @@ export PYTHON_VERSION=3.10
 
 ---
 
-## Descargar constraints oficiales
+### Descargar constraints oficiales
 
 ```bash
 export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
@@ -1023,7 +1023,7 @@ export CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constrai
 
 ---
 
-## Instalar Apache Airflow
+### Instalar Apache Airflow
 
 ```bash
 pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
@@ -1031,7 +1031,7 @@ pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}
 
 ---
 
-## Instalar el provider de Google Cloud
+### Instalar el provider de Google Cloud
 
 Para poder ejecutar jobs de Dataproc desde Airflow se necesita instalar el provider de Google Cloud.
 
@@ -1049,7 +1049,7 @@ airflow db init
 
 ---
 
-## Crear usuario administrador
+### Crear usuario administrador
 
 ```bash
 airflow users create \
@@ -1072,7 +1072,7 @@ mkdir -p ~/airflow/dags
 
 ---
 
-## Copiar el DAG del pipeline
+### Copiar el DAG del pipeline
 
 Desde el repositorio clonado en la VM:
 
@@ -1082,7 +1082,7 @@ cp orchestration/airflow_dag.py ~/airflow/dags/
 
 ---
 
-## Copiar el archivo de configuración del DAG
+### Copiar el archivo de configuración del DAG
 
 ```bash
 mkdir -p ~/airflow/dags/config
@@ -1117,7 +1117,7 @@ airflow webserver --port 8080
 
 ---
 
-## Acceder a la interfaz de Airflow
+### Acceder a la interfaz de Airflow
 
 Abrir el navegador y acceder a:
 
@@ -1135,7 +1135,7 @@ Desde esta interfaz se puede activar y ejecutar el pipeline completo.
 
 ---
 
-## Ejecutar el Pipeline
+### Ejecutar el Pipeline
 
 Desde la interfaz de Airflow:
 
@@ -1147,18 +1147,6 @@ Airflow ejecutará automáticamente el pipeline completo:
 ```text
 Bronze → Silver → Gold → BigQuery
 ```
-
----
-
-## Beneficios de la Orquestación
-
-El uso de Airflow permite:
-
-* automatizar la ejecución del pipeline
-* manejar dependencias entre tareas
-* reintentar tareas fallidas
-* monitorear el estado del pipeline
-* centralizar la ejecución del flujo de datos
 
 ---
 
