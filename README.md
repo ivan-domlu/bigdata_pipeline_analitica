@@ -1074,10 +1074,16 @@ mkdir -p ~/airflow/dags
 
 ### Copiar el DAG del pipeline
 
+Clonar este repositorio a la VM:
+
+```bash
+git clone https://github.com/ivan-domlu/bigdata_pipeline_analitica.git
+```
+
 Desde el repositorio clonado en la VM:
 
 ```bash
-cp orchestration/airflow_dag.py ~/airflow/dags/
+cp ~/bigdata_pipeline_analitica/orchestration/airflow_dag.py ~/airflow/dags/
 ```
 
 ---
@@ -1086,7 +1092,7 @@ cp orchestration/airflow_dag.py ~/airflow/dags/
 
 ```bash
 mkdir -p ~/airflow/dags/config
-cp config/airflow_config.yaml ~/airflow/dags/config/
+cp ~/bigdata_pipeline_analitica/config/airflow_config.yaml ~/airflow/dags/config/
 ```
 
 ---

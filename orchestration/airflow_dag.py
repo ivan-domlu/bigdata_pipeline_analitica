@@ -1,9 +1,30 @@
+import os
 import yaml
 from airflow import DAG
 from datetime import datetime
 from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
 
-CONFIG_PATH = "/home/airflow/gcs/dags/config/airflow_config.yaml"
+
+def get_config_path():
+    """
+    Detect config path automatically depending on environment.
+    """
+
+    airflow_home = os.environ.get("AIRFLOW_HOME", os.path.expanduser("~/airflow"))
+
+    possible_paths = [
+        f"{airflow_home}/dags/config/airflow_config.yaml",  # Airflow local
+        "/home/airflow/gcs/dags/config/airflow_config.yaml",  # Cloud Composer
+    ]
+
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+
+    raise FileNotFoundError("airflow_config.yaml not found in expected locations")
+
+
+CONFIG_PATH = get_config_path()
 
 
 def load_config():
