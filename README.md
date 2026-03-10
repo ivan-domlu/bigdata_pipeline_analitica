@@ -1036,7 +1036,7 @@ pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}
 Para poder ejecutar jobs de Dataproc desde Airflow se necesita instalar el provider de Google Cloud.
 
 ```bash
-pip install apache-airflow-providers-google
+pip install "apache-airflow-providers-google" --constraint "${CONSTRAINT_URL}"
 ```
 
 ---
