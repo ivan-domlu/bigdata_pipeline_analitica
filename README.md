@@ -1115,7 +1115,19 @@ En una terminal iniciar el scheduler:
 airflow scheduler
 ```
 
-En otra terminal iniciar el servidor web:
+Desde otra terminal de Cloud Shell iniciar conexión:
+
+```bash
+gcloud compute ssh airflow-vm --zone=us-central1-a
+```
+
+Activar el entorno virtual:
+
+```bash
+source airflow_env/bin/activate
+```
+
+Levantar el Webserver
 
 ```bash
 airflow webserver --port 8080
@@ -1125,13 +1137,29 @@ airflow webserver --port 8080
 
 ### Acceder a la interfaz de Airflow
 
+Para obtener la VM_EXTERNAL_IP en una instancia nueva de la terminal ejecutar el comando:
+
+```bash
+gcloud compute instances list
+```
+
 Abrir el navegador y acceder a:
 
 ```text
 http://<VM_EXTERNAL_IP>:8080
 ```
 
-En la interfaz aparecerá el DAG:
+Si la página no carga es necesario ejecutar:
+
+```bash
+gcloud compute firewall-rules create airflow-ui \
+--allow tcp:8080 \
+--source-ranges=0.0.0.0/0
+```
+
+En la interfaz deberemos loggearnos con las credenciales antes establecidas para el admin.
+
+Aparecerá el DAG:
 
 ```text
 fraud_detection_pipeline
