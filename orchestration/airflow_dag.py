@@ -2,7 +2,7 @@ import os
 import yaml
 from airflow import DAG
 from datetime import datetime
-from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
+from airflow.operators.bash import BashOperator
 
 
 def get_config_path():
@@ -60,43 +60,34 @@ with DAG(
     tags=["fraud", "data_pipeline"]
 ) as dag:
 
-    def dataproc_job(script):
+    def dataproc_command(script):
+        return f"""
+        gcloud dataproc jobs submit pyspark \
+        {script} \
+        --cluster={CLUSTER_NAME} \
+        --region={REGION} \
+        --files={CONFIG_FILE} \
+        -- pipeline_config.yaml
+        """
 
-        return {
-            "reference": {"project_id": PROJECT_ID},
-            "placement": {"cluster_name": CLUSTER_NAME},
-            "pyspark_job": {
-                "main_python_file_uri": script,
-                "args": [CONFIG_FILE]
-            }
-        }
-
-    bronze_task = DataprocSubmitJobOperator(
+    bronze_task = BashOperator(
         task_id="bronze_layer",
-        job=dataproc_job(BRONZE_SCRIPT),
-        region=REGION,
-        project_id=PROJECT_ID
+        bash_command=dataproc_command(BRONZE_SCRIPT)
     )
 
-    silver_task = DataprocSubmitJobOperator(
+    silver_task = BashOperator(
         task_id="silver_layer",
-        job=dataproc_job(SILVER_SCRIPT),
-        region=REGION,
-        project_id=PROJECT_ID
+        bash_command=dataproc_command(SILVER_SCRIPT)
     )
 
-    gold_task = DataprocSubmitJobOperator(
+    gold_task = BashOperator(
         task_id="gold_layer",
-        job=dataproc_job(GOLD_SCRIPT),
-        region=REGION,
-        project_id=PROJECT_ID
+        bash_command=dataproc_command(GOLD_SCRIPT)
     )
 
-    bigquery_task = DataprocSubmitJobOperator(
+    bigquery_task = BashOperator(
         task_id="load_bigquery",
-        job=dataproc_job(BIGQUERY_SCRIPT),
-        region=REGION,
-        project_id=PROJECT_ID
+        bash_command=dataproc_command(BIGQUERY_SCRIPT)
     )
 
     bronze_task >> silver_task >> gold_task >> bigquery_task

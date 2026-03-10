@@ -966,6 +966,65 @@ gcloud compute ssh airflow-vm --zone=us-central1-a
 
 ---
 
+## Configuración de permisos para la VM de Airflow
+
+Para que Airflow pueda ejecutar jobs en **Dataproc**, acceder a **Cloud Storage** y cargar datos en **BigQuery**, es necesario otorgar permisos al *service account* asociado a la máquina virtual donde corre Airflow.
+
+Por defecto, las VM de **Compute Engine** utilizan el siguiente service account:
+
+```text
+PROJECT_NUMBER-compute@developer.gserviceaccount.com
+```
+
+---
+
+### 1. Obtener el Project Number
+
+Primero obtenemos el **Project Number** del proyecto:
+
+```bash
+gcloud projects describe YOUR_PROJECT_ID \
+  --format="value(projectNumber)"
+```
+
+Esto devolvera algo como:
+
+```text
+295491483543
+```
+
+El service account será entonces:
+
+```text
+295491483543-compute@developer.gserviceaccount.com
+```
+
+### 2. Dar permisos para Dataproc
+
+```bash
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+  --member="serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+  --role="roles/dataproc.editor"
+```
+
+### 3. Dar permisos para Cloud Storage
+
+```bash
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+  --member="serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+  --role="roles/storage.objectAdmin"
+```
+
+### 4. Dar permisos para BigQuery
+
+```bash
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+  --member="serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+  --role="roles/bigquery.admin"
+```
+
+---
+
 ## Instalar Apache Airflow en la VM
 
 Una vez conectados a la máquina virtual, se procede a instalar Apache Airflow.
