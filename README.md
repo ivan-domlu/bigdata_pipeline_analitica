@@ -392,7 +392,7 @@ ENTER
 Desde **Cloud Shell**, ejecuta:
 
 ```bash
-gsutil cp spark_jobs/bronze_layer.py gs://<BUCKET_NAME>/scripts/
+gsutil cp spark_jobs/bronze/bronze_layer.py gs://<BUCKET_NAME>/scripts/
 gsutil cp config/pipeline_config.yaml gs://<BUCKET_NAME>/config/
 ```
 
